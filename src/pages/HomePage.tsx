@@ -16,7 +16,6 @@ type DealType = Enums<'deal_type'>
 
 const PAGE_SIZE = 12
 
-// 🔥 цвета фильтров (можешь менять)
 const FILTER_COLORS = {
   activeBg: '#5664c1',
   activeText: '#fff',
@@ -56,7 +55,7 @@ const styles = {
 
   grid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(4, 1fr)', // 💻 4 в ряд
+    gridTemplateColumns: 'repeat(4, 1fr)',
     gap: '16px',
   },
 
@@ -77,7 +76,6 @@ export default function HomePage() {
   const pageRef = useRef(0)
   const loaderRef = useRef<HTMLDivElement | null>(null)
 
-  // ✅ основной fetch
   const fetchItems = useCallback(async (reset = false) => {
     if (loading) return
 
@@ -111,7 +109,18 @@ export default function HomePage() {
     if (data) {
       const typed = data as ItemWithDetails[]
 
-      setItems(prev => (reset ? typed : [...prev, ...typed]))
+      setItems(prev => {
+
+        if (reset) return typed
+
+        const map = new Map()
+
+        ;[...prev, ...typed].forEach(item => {
+          map.set(item.id, item)
+        })
+
+  return Array.from(map.values())
+})
       setHasMore(typed.length === PAGE_SIZE)
 
       pageRef.current = reset ? 1 : pageRef.current + 1
@@ -120,13 +129,11 @@ export default function HomePage() {
     setLoading(false)
   }, [query, selectedDealType, loading])
 
-  // ✅ обновление при поиске/фильтре (БЕЗ setState в effect)
   useEffect(() => {
     pageRef.current = 0
     fetchItems(true)
   }, [query, selectedDealType, fetchItems])
 
-  // ✅ infinite scroll
   useEffect(() => {
     if (loading) return
 
@@ -153,9 +160,7 @@ export default function HomePage() {
       />
 
       <div style={styles.page}>
-        <h1 style={styles.title}>Объявления</h1>
 
-        {/* 🔥 фильтры */}
         <div style={styles.chipsContainer}>
           {['all', 'gift', 'rent', 'sale'].map(type => {
             const active = selectedDealType === type
@@ -179,16 +184,10 @@ export default function HomePage() {
           })}
         </div>
 
-        {/* 🔥 сетка */}
         <div style={styles.grid}>
           {items.map(item => (
             <ItemCard key={item.id} item={item} />
           ))}
-        </div>
-
-        {/* 🔥 загрузка */}
-        <div ref={loaderRef} style={styles.loadMore}>
-          {loading ? 'Загрузка...' : hasMore ? 'Прокрутите ниже' : 'Больше нет'}
         </div>
       </div>
     </>

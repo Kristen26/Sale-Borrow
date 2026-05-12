@@ -14,6 +14,7 @@ type ItemWithOwner = Item & {
 }
 
 export default function CartPage() {
+
   const { id } = useParams<{ id: string }>()
   const { session } = useAuth()
   const navigate = useNavigate()
@@ -22,10 +23,16 @@ export default function CartPage() {
   const [fav, setFav] = useState(false)
   const [loading, setLoading] = useState(true)
 
+  // 👇 индекс текущего фото
+  const [currentImage, setCurrentImage] = useState(0)
+
+  // ЗАГРУЗКА
   useEffect(() => {
+
     if (!id) return
 
     const load = async () => {
+
       setLoading(true)
 
       const { data } = await supabase
@@ -37,100 +44,281 @@ export default function CartPage() {
         .eq('id', id)
         .single()
 
-      if (data) setItem(data as ItemWithOwner)
+      if (data) {
+        setItem(data as ItemWithOwner)
+      }
 
       setLoading(false)
     }
 
     load()
+
   }, [id])
 
+  // FAVORITES
   useEffect(() => {
+
     if (!session || !item) return
-    isFavorite(session.user.id, item.id).then(setFav)
+
+    isFavorite(session.user.id, item.id)
+      .then(setFav)
+
   }, [session, item])
 
+  // FAVORITE CLICK
   const handleFav = async () => {
+
     if (!session || !item) {
       navigate('/auth')
       return
     }
 
     await toggleFavorite(session.user.id, item.id)
+
     setFav(prev => !prev)
   }
 
-  if (loading) return <div style={{ padding: 16 }}>Загрузка...</div>
-  if (!item) return <div style={{ padding: 16 }}>Товар не найден</div>
+  // 👇 СЛЕДУЮЩЕЕ ФОТО
+  const nextImage = () => {
+
+    if (!item?.image_urls?.length) return
+
+    setCurrentImage(prev => {
+
+      if (prev >= item.image_urls.length - 1) {
+        return 0
+      }
+
+      return prev + 1
+    })
+  }
+
+  // 👇 ПРЕДЫДУЩЕЕ ФОТО
+  const prevImage = () => {
+
+    if (!item?.image_urls?.length) return
+
+    setCurrentImage(prev => {
+
+      if (prev <= 0) {
+        return item.image_urls.length - 1
+      }
+
+      return prev - 1
+    })
+  }
+
+  if (loading) {
+    return (
+      <div style={styles.loading}>
+        Загрузка...
+      </div>
+    )
+  }
+
+  if (!item) {
+    return (
+      <div style={styles.loading}>
+        Товар не найден
+      </div>
+    )
+  }
 
   return (
-    <div style={styles.container}>
+    <div style={styles.page}>
 
-      {/* ФОТО */}
-      <div style={styles.imageWrap}>
-        {item.image_urls?.[0] ? (
-          <img src={item.image_urls[0]} style={styles.image} />
-        ) : (
-          <div style={styles.placeholder}>Нет фото</div>
-        )}
-      </div>
+      <div style={styles.container}>
 
-      {/* КОНТЕНТ */}
-      <div style={styles.content}>
-        <div style={styles.header}>
-          <h1 style={styles.title}>{item.title}</h1>
+        {/* IMAGE */}
+        <div style={styles.imageWrap}>
 
-          <button onClick={handleFav} style={styles.favBtn}>
-            {fav ? '❤️' : '🤍'}
-          </button>
-        </div>
+          {item.image_urls?.length ? (
 
-        <div style={styles.price}>{item.price} ₽</div>
+            <>
+              <img
+                src={item.image_urls[currentImage]}
+                style={styles.image}
+              />
 
-        <p style={styles.description}>
-          {item.description || 'Без описания'}
-        </p>
+              {/* КНОПКА НАЗАД */}
+              {item.image_urls.length > 1 && (
+                <button
+                  onClick={prevImage}
+                  style={{
+                    ...styles.arrow,
+                    left: '20px',
+                  }}
+                >
+                  ‹
+                </button>
+              )}
 
-        {/* ПРОДАВЕЦ */}
-        <div style={styles.sellerCard}>
-          <div style={styles.sellerLeft}>
-            {item.owner.avatar_url ? (
-              <img src={item.owner.avatar_url} style={styles.avatar} />
-            ) : (
-              <div style={styles.avatarPlaceholder}>👤</div>
-            )}
+              {/* КНОПКА ВПЕРЕД */}
+              {item.image_urls.length > 1 && (
+                <button
+                  onClick={nextImage}
+                  style={{
+                    ...styles.arrow,
+                    right: '20px',
+                  }}
+                >
+                  ›
+                </button>
+              )}
 
-            <div>
-              <div style={styles.sellerName}>
-                {item.owner.first_name} {item.owner.last_name || ''}
-              </div>
+              {/* ТОЧКИ */}
+              {item.image_urls.length > 1 && (
+                <div style={styles.dots}>
+
+                  {item.image_urls.map((_, index) => (
+
+                    <div
+                      key={index}
+                      style={{
+                        ...styles.dot,
+
+                        background:
+                          index === currentImage
+                            ? '#fff'
+                            : 'rgba(255,255,255,0.5)',
+                      }}
+                    />
+
+                  ))}
+
+                </div>
+              )}
+            </>
+
+          ) : (
+
+            <div style={styles.placeholder}>
+              Нет фото
             </div>
-          </div>
+
+          )}
+
         </div>
 
-        {/* КНОПКА */}
-        <div style={styles.chatWrap}>
-          <ChatButton
-            itemId={item.id}
-            sellerId={item.owner_id}
-          />
+        {/* CONTENT */}
+        <div style={styles.content}>
+
+          {/* HEADER */}
+          <div style={styles.header}>
+
+            <h1 style={styles.title}>
+              {item.title}
+            </h1>
+
+            <button
+              onClick={handleFav}
+              style={styles.favBtn}
+            >
+              {fav ? '❤️' : '🤍'}
+            </button>
+
+          </div>
+
+          {/* PRICE */}
+          <div style={styles.price}>
+            {item.price} ₽
+          </div>
+
+          {/* DESCRIPTION */}
+          <div style={styles.description}>
+            {item.description || 'Без описания'}
+          </div>
+
+          {/* SELLER */}
+          <div
+            style={styles.sellerCard}
+            onClick={() => navigate(`/buyer/${item.owner.id}`)}
+
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#f5f5f5'
+            }}
+
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#fff'
+            }}
+          >
+
+            <div style={styles.sellerLeft}>
+
+              {item.owner.avatar_url ? (
+                <img
+                  src={item.owner.avatar_url}
+                  style={styles.avatar}
+                />
+              ) : (
+                <div style={styles.avatarPlaceholder}>
+                  👤
+                </div>
+              )}
+
+              <div>
+
+                <div style={styles.sellerName}>
+                  {item.owner.first_name} {item.owner.last_name || ''}
+                </div>
+
+                <div style={styles.rating}>
+                  ⭐ {item.owner.rating || 0}
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* CHAT BUTTON */}
+          <div style={styles.chatWrap}>
+
+            <ChatButton
+              itemId={item.id}
+              sellerId={item.owner_id}
+            />
+
+          </div>
+
         </div>
+
       </div>
+
     </div>
   )
 }
 
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    backgroundColor: '#f8f9fa',
+const styles: Record<string, React.CSSProperties> = {
+
+  page: {
+    background: '#f4f4f4',
     minHeight: '100vh',
-    paddingBottom: '80px',
+    padding: '24px',
+  },
+
+  container: {
+    maxWidth: '1400px',
+    margin: '0 auto',
+    background: '#fff',
+    borderRadius: '22px',
+    overflow: 'hidden',
+    boxShadow: '0 2px 12px rgba(0,0,0,0.05)',
+  },
+
+  loading: {
+    padding: '40px',
+    textAlign: 'center',
+    fontSize: '18px',
   },
 
   imageWrap: {
     width: '100%',
-    height: '400px',
-    backgroundColor: '#eee',
+    height: '520px',
+    background: '#eee',
+    position: 'relative',
+    overflow: 'hidden',
   },
 
   image: {
@@ -138,97 +326,144 @@ const styles: { [key: string]: React.CSSProperties } = {
     height: '100%',
     objectFit: 'cover',
   },
-  
-  title: {
-  fontSize: '20px',
-  fontWeight: 600,
-  margin: 0,
-  textAlign: 'left', // 👈
-},
-
-  price: {
-    fontSize: '18px',
-    fontWeight: 700,
-    marginBottom: '12px',
-    textAlign: 'left', // 👈
-  },
-
-  description: {
-    fontSize: '14px',
-    color: '#555',
-    marginBottom: '20px',
-    textAlign: 'left', // 👈
-  },
 
   placeholder: {
     width: '100%',
     height: '100%',
+
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    color: '#999',
-    fontSize: '14px',
+
+    color: '#888',
+    fontSize: '16px',
+  },
+
+  arrow: {
+    position: 'absolute',
+    top: '50%',
+    transform: 'translateY(-50%)',
+
+    width: '46px',
+    height: '46px',
+
+    borderRadius: '50%',
+    border: 'none',
+
+    background: 'rgba(0,0,0,0.45)',
+    color: '#fff',
+
+    fontSize: '34px',
+    cursor: 'pointer',
+
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  dots: {
+    position: 'absolute',
+    bottom: '18px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+
+    display: 'flex',
+    gap: '8px',
+  },
+
+  dot: {
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
   },
 
   content: {
-    padding: '16px',
+    padding: '24px',
   },
 
   header: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'flex-start', // 👈 было 'left' (ошибка)
-    marginBottom: '8px',
+    alignItems: 'flex-start',
+    gap: '20px',
+    marginBottom: '12px',
+  },
+
+  title: {
+    margin: 0,
+    fontSize: '32px',
+    fontWeight: 700,
+    color: '#111',
   },
 
   favBtn: {
-    fontSize: '22px',
     background: 'none',
     border: 'none',
     cursor: 'pointer',
+    fontSize: '32px',
+  },
+
+  price: {
+    fontSize: '28px',
+    fontWeight: 700,
+    color: '#5664c1',
+    marginBottom: '18px',
+  },
+
+  description: {
+    fontSize: '16px',
+    lineHeight: 1.6,
+    color: '#444',
+    marginBottom: '28px',
   },
 
   sellerCard: {
-    backgroundColor: '#fff',
-    padding: '12px',
-    borderRadius: '12px',
+    background: '#fff',
     border: '1px solid #eee',
+    borderRadius: '16px',
+    padding: '16px',
+    cursor: 'pointer',
+    transition: '0.2s',
   },
 
   sellerLeft: {
     display: 'flex',
     alignItems: 'center',
-    gap: '10px',
+    gap: '14px',
   },
 
   avatar: {
-    width: '40px',
-    height: '40px',
+    width: '60px',
+    height: '60px',
     borderRadius: '50%',
     objectFit: 'cover',
   },
 
   avatarPlaceholder: {
-    width: '40px',
-    height: '40px',
+    width: '60px',
+    height: '60px',
     borderRadius: '50%',
-    backgroundColor: '#ddd',
+    background: '#ddd',
+
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+
+    fontSize: '26px',
   },
 
   sellerName: {
-    fontSize: '14px',
-    fontWeight: 500,
+    fontSize: '18px',
+    fontWeight: 600,
+    marginBottom: '4px',
   },
 
   rating: {
-    fontSize: '12px',
-    color: '#888',
+    fontSize: '14px',
+    color: '#666',
   },
 
   chatWrap: {
-    marginTop: '16px',
+    marginTop: '22px',
   },
 }

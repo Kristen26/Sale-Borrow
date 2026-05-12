@@ -261,6 +261,51 @@ export interface Database {
             referencedColumns: ["id"]
           }
         ]
+      },
+      reviews: {
+        Row: {
+          id: string
+          seller_id: string
+          author_id: string
+          rating: number
+          comment: string | null
+          created_at: string | null
+        }
+
+        Insert: {
+          id?: string
+          seller_id: string
+          author_id: string
+          rating: number
+          comment?: string | null
+          created_at?: string | null
+        }
+
+        Update: {
+          id?: string
+          seller_id?: string
+          author_id?: string
+          rating?: number
+          comment?: string | null
+          created_at?: string | null
+        }
+
+        Relationships: [
+          {
+            foreignKeyName: "reviews_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {

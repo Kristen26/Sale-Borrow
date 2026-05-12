@@ -12,6 +12,8 @@ import CartPage from './pages/CartPage'
 import ActiveItemsPage from './pages/ActiveProductPage'
 import CompletedItemsPage from './pages/CompProductActivate'
 import EditItemPage from './pages/EditItemPage'
+import BuyerPage from './pages/BuyerPage'
+import ScorePage from './pages/ScorePage'
 
 function App() {
   return (
@@ -21,17 +23,18 @@ function App() {
         <Route path="/item/:id" element={<CartPage />} />
 
         <Route element={<AppLayout />}>
-        <Route index element={<HomePage />} />
-
-          <Route element={<ProtectedRoute />}>
-          <Route path="/chat" element={<ChatsPage />} />
-          <Route path="/chat/:id" element={<ChatPage />} />
+          <Route index element={<HomePage />} />
+            <Route element={<ProtectedRoute />}>
+            <Route path="/chat" element={<ChatsPage />} />
+            <Route path="/chat/:id" element={<ChatPage />} />
             <Route path="/new" element={<NewItemPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/my/active" element={<ActiveItemsPage />} />
             <Route path="/my/completed" element={<CompletedItemsPage />} />
             <Route path="/edit/:id" element={<EditItemPage />} />
+            <Route path="/buyer/:id" element={<BuyerPage />} />
+            <Route path="/score/:id" element={<ScorePage />} />
           </Route>
         </Route>
       </Routes>

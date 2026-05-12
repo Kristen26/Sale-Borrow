@@ -17,104 +17,139 @@ export default function MyItemCard({
   actionText,
   actionStyle,
 }: Props) {
+
+  const image =
+    item.image_urls &&
+    item.image_urls.length > 0
+      ? item.image_urls[0]
+      : null
+
   return (
     <div style={styles.card}>
+
+      {/* ФОТО */}
       <div style={styles.imageWrap}>
-        {item.image_urls?.[0] ? (
-          <img src={item.image_urls[0]} style={styles.image} />
+
+        {image ? (
+          <img
+            src={image}
+            alt={item.title}
+            style={styles.image}
+          />
         ) : (
-          <div style={styles.placeholder}>📷</div>
+          <div style={styles.placeholder}>
+            📷
+          </div>
         )}
+
       </div>
 
+      {/* ИНФОРМАЦИЯ */}
       <div style={styles.info}>
+
         <div>
-          <div style={styles.name}>{item.title}</div>
-          <div style={styles.price}>{item.price} ₽</div>
+          <div style={styles.name}>
+            {item.title}
+          </div>
+
+          <div style={styles.price}>
+            {item.price} ₽
+          </div>
         </div>
 
+        {/* КНОПКИ */}
         <div style={styles.actions}>
-          <button style={styles.edit} onClick={onEdit}>
+
+          <button
+            style={styles.edit}
+            onClick={onEdit}
+          >
             Редактировать
           </button>
 
-          <button style={actionStyle} onClick={onAction}>
+          <button
+            style={actionStyle}
+            onClick={onAction}
+          >
             {actionText}
           </button>
+
         </div>
+
       </div>
+
     </div>
   )
 }
 
-const styles: { [key: string]: React.CSSProperties } = {
+const styles: Record<string, React.CSSProperties> = {
+
   card: {
     display: 'flex',
-    gap: '10px',
+    gap: '12px',
     background: '#fff',
-    borderRadius: '12px',
+    borderRadius: '14px',
     border: '1px solid #eee',
-    marginBottom: '10px',
+    marginBottom: '12px',
+    overflow: 'hidden',
   },
+
   imageWrap: {
-    width: '90px',
-    height: '100px',
+    width: '110px',
+    minWidth: '110px',
+    height: '110px',
+    background: '#f3f3f3',
   },
+
   image: {
     width: '100%',
     height: '100%',
     objectFit: 'cover',
+    display: 'block',
   },
+
   placeholder: {
     width: '100%',
     height: '100%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: '#f0f0f0',
+    fontSize: '28px',
+    color: '#999',
   },
+
   info: {
-    flex: 2,
-    padding: '8px',
+    flex: 1,
+    padding: '12px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: '10px',
   },
+
   name: {
-    fontSize: '17px',
-    fontWeight: 500,
+    fontSize: '16px',
+    fontWeight: 600,
+    marginBottom: '6px',
   },
+
   price: {
     fontSize: '15px',
-    fontWeight: 600,
-    marginTop: '4px',
+    fontWeight: 700,
+    color: '#5664c1',
   },
+
   actions: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '6px',
+    gap: '8px',
   },
+
   edit: {
-    padding: '6px',
-    borderRadius: '8px',
+    padding: '8px 10px',
+    borderRadius: '10px',
     border: '1px solid #ddd',
     background: '#fff',
-    cursor: 'pointer',
-  },
-  restore: {
-    padding: '6px',
-    borderRadius: '8px',
-    border: 'none',
-    background: '#4caf50',
-    color: '#fff',
-    cursor: 'pointer',
-  },
-  stop: {
-    padding: '6px',
-    borderRadius: '8px',
-    border: 'none',
-    background: '#e39865',
-    color: '#fff',
     cursor: 'pointer',
   },
 }

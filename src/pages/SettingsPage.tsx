@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../lib/AuthProvider'
 import { useNavigate } from 'react-router-dom'
 import type { Tables } from '../types/database.types'
+import type { ChangeEvent } from 'react'
 
 type Profile = Tables<'profiles'>
 
@@ -47,6 +48,72 @@ export default function SettingsPage() {
     alert('Сохранено')
   }
 
+  const handleUploadAvatar = async (
+    e: ChangeEvent<HTMLInputElement>
+  ) => {
+
+    if (!e.target.files?.[0]) return
+    if (!profile) return
+
+    const file = e.target.files[0]
+
+    const fileExt = file.name.split('.').pop()
+
+    const fileName = `${profile.id}.${fileExt}`
+
+    if (profile.avatar_url) {
+
+      const oldFileName =
+        profile.avatar_url.split('/').pop()
+
+      if (oldFileName) {
+
+        await supabase.storage
+          .from('avatars')
+          .remove([oldFileName])
+
+      }
+    }
+
+    // upload file
+    const { error } = await supabase.storage
+      .from('avatars')
+      .upload(fileName, file, {
+        upsert: true,
+      })
+
+    if (error) {
+      console.log(error)
+      alert('Ошибка загрузки')
+      return
+    }
+
+    // get public url
+    const { data } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(fileName)
+
+    const publicUrl = data.publicUrl
+
+    // update profile
+    await supabase
+      .from('profiles')
+      .update({
+        avatar_url: publicUrl,
+      })
+      .eq('id', profile.id)
+
+    // local update
+    setProfile(prev =>
+      prev
+        ? {
+            ...prev,
+            avatar_url: publicUrl,
+          }
+        : prev
+    )
+  }
+
   const handleLogout = async () => {
     await supabase.auth.signOut()
     navigate('/')
@@ -57,14 +124,6 @@ export default function SettingsPage() {
   return (
     <div style={styles.page}>
         <h1 style={styles.title}>Профиль</h1>
-
-        {/* АККАУНТ */}
-        <div style={styles.accountBox}>
-          <div style={styles.accountLabel}>Вы вошли как:</div>
-          <div style={styles.accountEmail}>
-            {session?.user?.email || '—'}
-          </div>
-        </div>
 
       {/* АВАТАР */}
       <div style={styles.avatarWrap}>
@@ -77,13 +136,42 @@ export default function SettingsPage() {
                 ? profile.first_name.charAt(0).toUpperCase()
                 : '👤'}
       </div>
-          )}
+                  )}
+                </div>
+        <label style={styles.avatarBtn}>
+
+          Загрузить фото
+
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleUploadAvatar}
+          />
+
+        </label>
+      </div>
+
+      {/* АККАУНТ */}
+        <div style={styles.accountBox}>
+          <div style={styles.accountLabel}>Вы вошли как:</div>
+          <div style={styles.accountEmail}>
+            {session?.user?.email || '—'}
+          </div>
         </div>
 
-        <button style={styles.avatarBtn}>
-          Загрузить фото
-        </button>
-      </div>
+      {/* РЕЙТИНГ */}
+        <div style={styles.ratingBox}>
+
+          <div style={styles.ratingLabel}>
+            Рейтинг продавца
+          </div>
+
+          <div style={styles.ratingValue}>
+            ⭐ {profile?.rating?.toFixed(1) || '0.0'}
+          </div>
+
+        </div>
 
       {/* ИМЯ */}
       <input
@@ -225,12 +313,12 @@ const styles: Record<string, React.CSSProperties> = {
     width: '100%',
     textAlign: 'left',
     padding: '10px',
-    border: '1px solid #eeeeee',
+    border: '0.3px solid #ffffff',
     borderRadius: '10px',
     marginBottom: '8px',
-    background: '#d6d8dc',
+    background: '#dddddd',
     cursor: 'pointer',
-    color: '#0b1728',
+    color: '#3e3c3c',
   },
 
   logout: {
@@ -259,7 +347,26 @@ const styles: Record<string, React.CSSProperties> = {
   },
 
   accountEmail: {
-    fontSize: '14px',
-    fontWeight: 500,
+      fontSize: '14px',
+      fontWeight: 500,
+    },
+    ratingBox: {
+    background: '#fff',
+    border: '1px solid #eee',
+    borderRadius: '12px',
+    padding: '14px',
+    marginBottom: '16px',
+  },
+
+  ratingLabel: {
+    fontSize: '12px',
+    color: '#888',
+    marginBottom: '6px',
+  },
+
+  ratingValue: {
+    fontSize: '22px',
+    fontWeight: 700,
+    color: '#5664c1',
   },
 }

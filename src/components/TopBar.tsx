@@ -41,14 +41,14 @@ const styles: Record<string, React.CSSProperties> = {
     top: 0,
     left: 0,
     right: 0,
-    background: '#5664c1',
+    background: '#929cda',
     borderBottomLeftRadius: '20px',
     borderBottomRightRadius: '20px',
     zIndex: 100,
   },
 
   inner: {
-    maxWidth: '1200px', // 🔥 теперь десктоп
+    maxWidth: '1200px',
     margin: '0 auto',
     padding: '12px 16px 16px',
   },

@@ -61,12 +61,10 @@ export default function ChatPage() {
     load()
   }, [id])
 
-  // 🔥 авто-скролл вниз
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
 
-  // 🔥 отправка
   const sendMessage = async () => {
     if (!text.trim() || !id || !userId) return
 
@@ -120,7 +118,7 @@ export default function ChatPage() {
                 style={{
                   ...styles.bubble,
                   background:
-                    msg.sender_id === userId ? "#5664c1" : "#eee",
+                    msg.sender_id === userId ? "#7bd194" : "#eee",
                   color:
                     msg.sender_id === userId ? "#fff" : "#000",
                 }}
@@ -164,7 +162,7 @@ const layout = {
     background: "#ececec",
     minHeight: "100vh",
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "column" as const,
   },
 }
 
