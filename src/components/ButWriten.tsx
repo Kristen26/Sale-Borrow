@@ -13,7 +13,7 @@ export default function ChatButton({
   const { session } = useAuth()
 
   const handleChat = async () => {
-    if (!session) { 
+    if (!session) {
       navigate('/auth')
       return
     }

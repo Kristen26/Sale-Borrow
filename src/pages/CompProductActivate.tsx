@@ -52,7 +52,7 @@ export default function CompProductActivate() {
   return (
     <div style={styles.container}>
       <button onClick={() => navigate(-1)} style={styles.back}>
-        ← Назад
+        Назад
       </button>
 
       <h1 style={styles.title}>Завершённые объявления</h1>

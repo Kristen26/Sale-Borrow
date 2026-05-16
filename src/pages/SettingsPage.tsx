@@ -75,7 +75,6 @@ export default function SettingsPage() {
       }
     }
 
-    // upload file
     const { error } = await supabase.storage
       .from('avatars')
       .upload(fileName, file, {
@@ -88,14 +87,12 @@ export default function SettingsPage() {
       return
     }
 
-    // get public url
     const { data } = supabase.storage
       .from('avatars')
       .getPublicUrl(fileName)
 
     const publicUrl = data.publicUrl
 
-    // update profile
     await supabase
       .from('profiles')
       .update({
@@ -103,7 +100,6 @@ export default function SettingsPage() {
       })
       .eq('id', profile.id)
 
-    // local update
     setProfile(prev =>
       prev
         ? {
@@ -125,7 +121,6 @@ export default function SettingsPage() {
     <div style={styles.page}>
         <h1 style={styles.title}>Профиль</h1>
 
-      {/* АВАТАР */}
       <div style={styles.avatarWrap}>
         <div style={styles.avatar}>
           {profile?.avatar_url ? (
@@ -134,7 +129,7 @@ export default function SettingsPage() {
             <div style={styles.avatarPlaceholder}>
               {profile?.first_name
                 ? profile.first_name.charAt(0).toUpperCase()
-                : '👤'}
+                : 'Фото'}
       </div>
                   )}
                 </div>
@@ -152,7 +147,6 @@ export default function SettingsPage() {
         </label>
       </div>
 
-      {/* АККАУНТ */}
         <div style={styles.accountBox}>
           <div style={styles.accountLabel}>Вы вошли как:</div>
           <div style={styles.accountEmail}>
@@ -160,7 +154,6 @@ export default function SettingsPage() {
           </div>
         </div>
 
-      {/* РЕЙТИНГ */}
         <div style={styles.ratingBox}>
 
           <div style={styles.ratingLabel}>
@@ -168,12 +161,11 @@ export default function SettingsPage() {
           </div>
 
           <div style={styles.ratingValue}>
-            ⭐ {profile?.rating?.toFixed(1) || '0.0'}
+            Рейтинг {profile?.rating?.toFixed(1) || '0.0'}
           </div>
 
         </div>
 
-      {/* ИМЯ */}
       <input
         value={profile?.first_name ?? ''}
         onChange={(e) =>
@@ -183,7 +175,6 @@ export default function SettingsPage() {
         style={styles.input}
       />
 
-      {/* ФАМИЛИЯ */}
       <input
         value={profile?.last_name ?? ''}
         onChange={(e) =>
@@ -197,7 +188,6 @@ export default function SettingsPage() {
         Сохранить
       </button>
 
-      {/* МОИ ОБЪЯВЛЕНИЯ */}
       <div style={styles.section}>
         <h2 style={styles.sectionTitle}>Мои объявления</h2>
 
@@ -216,7 +206,6 @@ export default function SettingsPage() {
         </button>
       </div>
 
-      {/* ВЫХОД */}
       <button onClick={handleLogout} style={styles.logout}>
         Выйти
       </button>

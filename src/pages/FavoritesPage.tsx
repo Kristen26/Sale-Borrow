@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../lib/AuthProvider'
-import ItemCard from '../components/card'
+import ItemCard from '../components/ItemCard'
 import type { Tables } from '../types/database.types'
 
 type Item = Tables<'items'>
@@ -49,7 +49,7 @@ export default function FavoritesPage() {
     }
 
     loadFavorites()
-  }, [session, navigate]) // ✅ добавили navigate
+  }, [session, navigate])
 
   if (loading) {
     return <div style={{ padding: 20 }}>Загрузка...</div>

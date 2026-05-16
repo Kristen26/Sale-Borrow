@@ -76,7 +76,6 @@ export default function ItemCard({
       }
     >
 
-      {/* IMAGE */}
       <div style={styles.imageWrap}>
 
         {item.image_urls?.[0] ? (
@@ -95,10 +94,8 @@ export default function ItemCard({
 
         )}
 
-        {/* GRADIENT */}
         <div style={styles.gradient} />
 
-        {/* FAVORITE */}
         <button
           onClick={handleFav}
           style={styles.heart}
@@ -106,14 +103,12 @@ export default function ItemCard({
           {fav ? '❤️' : '🤍'}
         </button>
 
-        {/* TYPE */}
         <div style={styles.badge}>
           {getDealLabel()}
         </div>
 
       </div>
 
-      {/* BODY */}
       <div style={styles.body}>
 
         <div style={styles.price}>

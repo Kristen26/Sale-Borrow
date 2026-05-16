@@ -12,10 +12,8 @@ const TopBar: FC<Props> = ({ title, searchValue, onSearchChange }) => {
       <div style={styles.inner}>
 
         <div style={styles.row}>
-          {/* ЛОГО / НАЗВАНИЕ */}
           <div style={styles.title}>{title}</div>
 
-          {/* ПОИСК */}
           {onSearchChange && (
             <div style={styles.searchWrap}>
               <input

@@ -140,7 +140,6 @@ export default function LeafletMap({
 
   return (
     <div style={{ width: '100%' }}>
-      {/* Поисковая строка */}
       <div style={{ position: 'relative', marginBottom: '16px' }}>
         <input
           type="text"
@@ -160,7 +159,6 @@ export default function LeafletMap({
           onBlur={(e) => (e.currentTarget.style.borderColor = '#ccc')}
         />
         
-        {/* Выпадающий список подсказок */}
         {suggestions.length > 0 && (
           <div
             style={{
@@ -202,7 +200,6 @@ export default function LeafletMap({
         )}
       </div>
 
-      {/* Карта */}
       <MapContainer
         center={mapCenter}
         zoom={mapZoom}
@@ -217,7 +214,6 @@ export default function LeafletMap({
         {markerPosition && <Marker position={markerPosition} />}
       </MapContainer>
 
-      {/* Отображение выбранного адреса */}
       {selectedAddress && (
         <div
           style={{
@@ -229,7 +225,7 @@ export default function LeafletMap({
             border: '1px solid #4caf50',
           }}
         >
-          <strong>📍 Выбранный адрес:</strong> {selectedAddress}
+          <strong>Выбранный адрес:</strong> {selectedAddress}
         </div>
       )}
     </div>

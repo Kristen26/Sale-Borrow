@@ -14,7 +14,7 @@ type Chat = {
   item: { title: string } | null
   buyer: { first_name: string } | null
   seller: { first_name: string } | null
-  last_message: Message[] // ✅ теперь массив
+  last_message: Message[]
 }
 
 export default function ChatsPage() {

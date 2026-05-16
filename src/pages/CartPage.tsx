@@ -23,10 +23,8 @@ export default function CartPage() {
   const [fav, setFav] = useState(false)
   const [loading, setLoading] = useState(true)
 
-  // 👇 индекс текущего фото
   const [currentImage, setCurrentImage] = useState(0)
 
-  // ЗАГРУЗКА
   useEffect(() => {
 
     if (!id) return
@@ -65,7 +63,6 @@ export default function CartPage() {
 
   }, [session, item])
 
-  // FAVORITE CLICK
   const handleFav = async () => {
 
     if (!session || !item) {
@@ -78,7 +75,6 @@ export default function CartPage() {
     setFav(prev => !prev)
   }
 
-  // 👇 СЛЕДУЮЩЕЕ ФОТО
   const nextImage = () => {
 
     if (!item?.image_urls?.length) return
@@ -93,7 +89,6 @@ export default function CartPage() {
     })
   }
 
-  // 👇 ПРЕДЫДУЩЕЕ ФОТО
   const prevImage = () => {
 
     if (!item?.image_urls?.length) return
@@ -129,7 +124,6 @@ export default function CartPage() {
 
       <div style={styles.container}>
 
-        {/* IMAGE */}
         <div style={styles.imageWrap}>
 
           {item.image_urls?.length ? (
@@ -140,33 +134,6 @@ export default function CartPage() {
                 style={styles.image}
               />
 
-              {/* КНОПКА НАЗАД */}
-              {item.image_urls.length > 1 && (
-                <button
-                  onClick={prevImage}
-                  style={{
-                    ...styles.arrow,
-                    left: '20px',
-                  }}
-                >
-                  ‹
-                </button>
-              )}
-
-              {/* КНОПКА ВПЕРЕД */}
-              {item.image_urls.length > 1 && (
-                <button
-                  onClick={nextImage}
-                  style={{
-                    ...styles.arrow,
-                    right: '20px',
-                  }}
-                >
-                  ›
-                </button>
-              )}
-
-              {/* ТОЧКИ */}
               {item.image_urls.length > 1 && (
                 <div style={styles.dots}>
 
@@ -200,10 +167,8 @@ export default function CartPage() {
 
         </div>
 
-        {/* CONTENT */}
         <div style={styles.content}>
 
-          {/* HEADER */}
           <div style={styles.header}>
 
             <h1 style={styles.title}>
@@ -219,17 +184,14 @@ export default function CartPage() {
 
           </div>
 
-          {/* PRICE */}
           <div style={styles.price}>
             {item.price} ₽
           </div>
 
-          {/* DESCRIPTION */}
           <div style={styles.description}>
             {item.description || 'Без описания'}
           </div>
 
-          {/* SELLER */}
           <div
             style={styles.sellerCard}
             onClick={() => navigate(`/buyer/${item.owner.id}`)}
@@ -252,7 +214,7 @@ export default function CartPage() {
                 />
               ) : (
                 <div style={styles.avatarPlaceholder}>
-                  👤
+                  Фото
                 </div>
               )}
 
@@ -263,7 +225,7 @@ export default function CartPage() {
                 </div>
 
                 <div style={styles.rating}>
-                  ⭐ {item.owner.rating || 0}
+                  Рейтинг {item.owner.rating || 0}
                 </div>
 
               </div>
@@ -272,7 +234,6 @@ export default function CartPage() {
 
           </div>
 
-          {/* CHAT BUTTON */}
           <div style={styles.chatWrap}>
 
             <ChatButton

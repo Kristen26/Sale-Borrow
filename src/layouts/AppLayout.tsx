@@ -1,4 +1,3 @@
-// src/layouts/AppLayout.tsx
 import { Outlet } from 'react-router-dom';
 import BottomNavBar from '../navigation/BottomNav';
 

@@ -18,51 +18,49 @@ export default function BottomNavBar() {
     {
       path: '/',
       label: 'Главная',
-      icon: '🏠',
-      activeIcon: '🏠',
+      icon: 'Г',
+      activeIcon: 'Г',
     },
     {
       path: '/chat',
       label: 'Чаты',
-      icon: '💬',
-      activeIcon: '💬',
+      icon: 'Ч',
+      activeIcon: 'Ч',
       requiresAuth: true,
     },
     {
       path: '/favorites',
       label: 'Избранное',
-      icon: '❤️',
-      activeIcon: '❤️',
+      icon: 'И',
+      activeIcon: 'И',
       requiresAuth: true,
     },
     {
       path: '/new',
       label: 'Создать',
-      icon: '➕',
-      activeIcon: '➕',
+      icon: 'С',
+      activeIcon: 'С',
       requiresAuth: true,
     },
     {
       path: '/settings',
       label: 'Профиль',
-      icon: '👤',
-      activeIcon: '👤',
+      icon: 'П',
+      activeIcon: 'П',
       requiresAuth: true,
     },
   ];
 
-  // Фильтруем пункты в зависимости от авторизации
   const visibleItems = navItems.filter(item => 
     !item.requiresAuth || session
   );
 
-  // Если пользователь не авторизован, добавляем кнопку "Войти"
   if (!session) {
     visibleItems.push({
       path: '/auth',
       label: 'Войти',
-      icon: '🔑',
-      activeIcon: '🔑',
+      icon: 'Вход',
+      activeIcon: 'В',
     });
   }
 

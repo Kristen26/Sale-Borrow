@@ -1,6 +1,6 @@
 .chats-page {
   padding: 12px;
-  padding-bottom: 80px; /* чтобы не перекрывала нижняя панель */
+  padding-bottom: 80px;
 }
 
 .chats-title {
@@ -13,7 +13,6 @@
   color: gray;
 }
 
-/* ЧАТ */
 .chat-item {
   display: flex;
   align-items: center;
@@ -45,7 +44,6 @@
   font-weight: bold;
 }
 
-/* ЦЕНТР */
 .chat-main {
   flex: 1;
   margin-left: 12px;

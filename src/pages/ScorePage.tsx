@@ -110,7 +110,7 @@ export default function ScorePage() {
                 opacity: rating >= num ? 1 : 0.35,
               }}
             >
-              ⭐
+              0
             </button>
           ))}
         </div>

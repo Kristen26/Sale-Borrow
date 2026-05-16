@@ -29,7 +29,6 @@ export default function ChatPage() {
 
   const bottomRef = useRef<HTMLDivElement | null>(null)
 
-  // 🔥 загрузка
   useEffect(() => {
     if (!id) return
 
@@ -89,7 +88,6 @@ export default function ChatPage() {
     <div style={layout.page}>
       <div style={layout.centered}>
 
-        {/* HEADER */}
         <div style={styles.header}>
           <div style={styles.title}>
             {chatInfo?.item?.title || "Товар"}
@@ -102,7 +100,6 @@ export default function ChatPage() {
           </div>
         </div>
 
-        {/* СООБЩЕНИЯ */}
         <div style={styles.messages}>
           {messages.map((msg) => (
             <div
@@ -131,7 +128,6 @@ export default function ChatPage() {
           <div ref={bottomRef} />
         </div>
 
-        {/* INPUT */}
         <div style={styles.inputWrap}>
           <input
             value={text}

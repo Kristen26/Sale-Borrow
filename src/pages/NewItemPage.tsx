@@ -1,5 +1,3 @@
-// pages/NewItemPage.tsx
-
 import { useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../lib/AuthProvider'
@@ -68,7 +66,6 @@ export default function NewItemPage() {
         return
       }
 
-      // BUILDING
       const {
         data: newBuilding,
         error: buildingError,
@@ -86,7 +83,6 @@ export default function NewItemPage() {
         throw buildingError
       }
 
-      // UPLOAD IMAGES
       const uploadedUrls: string[] = []
 
       for (const image of images) {
@@ -114,7 +110,6 @@ export default function NewItemPage() {
         uploadedUrls.push(data.publicUrl)
       }
 
-      // CREATE ITEM
       const { error: itemError } =
         await supabase
           .from('items')
@@ -234,22 +229,21 @@ export default function NewItemPage() {
             style={styles.input}
           >
             <option value="sale">
-              💰 Продажа
+              Продажа
             </option>
 
             <option value="rent">
-              📦 Аренда
+              Аренда
             </option>
 
             <option value="gift">
-              🎁 Бесплатно
+              Бесплатно
             </option>
 
           </select>
 
         </div>
 
-        {/* PHOTO */}
 
         <div style={styles.block}>
 
@@ -316,7 +310,6 @@ export default function NewItemPage() {
 
         </div>
 
-        {/* MAP */}
 
         <div style={styles.block}>
 
@@ -337,7 +330,7 @@ export default function NewItemPage() {
           <div style={styles.addressBox}>
 
             <strong>
-              ✅ Выбранный адрес:
+              Выбранный адрес:
             </strong>
 
             <div>

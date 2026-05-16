@@ -27,7 +27,6 @@ export default function MyItemCard({
   return (
     <div style={styles.card}>
 
-      {/* ФОТО */}
       <div style={styles.imageWrap}>
 
         {image ? (
@@ -38,13 +37,12 @@ export default function MyItemCard({
           />
         ) : (
           <div style={styles.placeholder}>
-            📷
+            Фото
           </div>
         )}
 
       </div>
 
-      {/* ИНФОРМАЦИЯ */}
       <div style={styles.info}>
 
         <div>
@@ -57,7 +55,6 @@ export default function MyItemCard({
           </div>
         </div>
 
-        {/* КНОПКИ */}
         <div style={styles.actions}>
 
           <button

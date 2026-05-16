@@ -36,15 +36,12 @@ export default function EditItemPage() {
   const [coordinates, setCoordinates] =
     useState<{ lat: number; lon: number } | null>(null)
 
-  // СТАРЫЕ ФОТО
   const [existingImages, setExistingImages] =
     useState<string[]>([])
 
-  // НОВЫЕ ФОТО
   const [newImages, setNewImages] =
     useState<File[]>([])
 
-  // ЗАГРУЗКА ОБЪЯВЛЕНИЯ
   useEffect(() => {
 
     if (!id) return
@@ -108,7 +105,6 @@ export default function EditItemPage() {
     })
   }
 
-  // СОХРАНЕНИЕ
   const handleSave = async (
     e: React.FormEvent
   ) => {
@@ -123,7 +119,6 @@ export default function EditItemPage() {
 
       let buildingId = item.building_id
 
-      // ЕСЛИ ИЗМЕНИЛИ АДРЕС
       if (coordinates) {
 
         const {
@@ -143,7 +138,6 @@ export default function EditItemPage() {
         }
       }
 
-      // UPLOAD НОВЫХ ФОТО
       const uploadedUrls: string[] = []
 
       for (const image of newImages) {
@@ -171,7 +165,6 @@ export default function EditItemPage() {
         uploadedUrls.push(data.publicUrl)
       }
 
-      // ВСЕ ФОТО
       const finalImages = [
 
         ...existingImages,
@@ -180,7 +173,6 @@ export default function EditItemPage() {
 
       ]
 
-      // UPDATE
       const { error } = await supabase
         .from('items')
         .update({
@@ -204,7 +196,7 @@ export default function EditItemPage() {
         throw error
       }
 
-      alert('Сохранено ✅')
+      alert('Сохранено')
 
       navigate(-1)
 
@@ -237,7 +229,7 @@ export default function EditItemPage() {
         onClick={() => navigate(-1)}
         style={styles.backBtn}
       >
-        ← Назад
+        Назад
       </button>
 
       <h1 style={styles.title}>
@@ -246,7 +238,6 @@ export default function EditItemPage() {
 
       <form onSubmit={handleSave}>
 
-        {/* TITLE */}
         <div style={styles.block}>
 
           <label style={styles.label}>
@@ -263,7 +254,6 @@ export default function EditItemPage() {
 
         </div>
 
-        {/* PRICE */}
         <div style={styles.block}>
 
           <label style={styles.label}>
@@ -281,7 +271,6 @@ export default function EditItemPage() {
 
         </div>
 
-        {/* DESCRIPTION */}
         <div style={styles.block}>
 
           <label style={styles.label}>
@@ -298,7 +287,6 @@ export default function EditItemPage() {
 
         </div>
 
-        {/* DEAL TYPE */}
         <div style={styles.block}>
 
           <label style={styles.label}>
@@ -331,7 +319,6 @@ export default function EditItemPage() {
 
         </div>
 
-        {/* ФОТО */}
         <div style={styles.block}>
 
           <div style={styles.label}>
@@ -340,7 +327,6 @@ export default function EditItemPage() {
 
           <div style={styles.previewGrid}>
 
-            {/* ADD PHOTO */}
 
             <label style={styles.uploadBox}>
 
@@ -369,7 +355,6 @@ export default function EditItemPage() {
 
             </label>
 
-            {/* OLD IMAGES */}
 
             {existingImages.map((
               image,
@@ -406,7 +391,6 @@ export default function EditItemPage() {
 
             ))}
 
-            {/* NEW IMAGES */}
 
             {newImages.map((
               image,
@@ -447,7 +431,6 @@ export default function EditItemPage() {
 
         </div>
 
-        {/* MAP */}
         <div style={styles.block}>
 
           <label style={styles.label}>
@@ -468,7 +451,7 @@ export default function EditItemPage() {
           <div style={styles.addressBox}>
 
             <strong>
-              📍 Адрес:
+              Адрес:
             </strong>
 
             <div>
@@ -479,7 +462,6 @@ export default function EditItemPage() {
 
         )}
 
-        {/* SAVE */}
         <button
           disabled={saving}
           style={styles.submitBtn}

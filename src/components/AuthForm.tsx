@@ -26,11 +26,7 @@ export default function AuthForm() {
       return
     }
 
-    if (isLogin) {
-      navigate('/', { replace: true }) // ✅ редирект
-    } else {
-      alert('Проверьте почту для подтверждения')
-    }
+    navigate('/', { replace: true })
 
     setLoading(false)
   }
@@ -43,7 +39,6 @@ export default function AuthForm() {
         </h1>
 
         <form onSubmit={handleSubmit} style={styles.form}>
-          {/* Email */}
           <div style={styles.field}>
             <label style={styles.label}>Email</label>
             <input
@@ -56,7 +51,6 @@ export default function AuthForm() {
             />
           </div>
 
-          {/* Password */}
           <div style={styles.field}>
             <label style={styles.label}>Пароль</label>
             <input
@@ -69,14 +63,12 @@ export default function AuthForm() {
             />
           </div>
 
-          {/* Error */}
           {errorMsg && (
             <div style={styles.error}>
               {errorMsg}
             </div>
           )}
 
-          {/* Submit */}
           <button type="submit" style={styles.button} disabled={loading}>
             {loading
               ? 'Загрузка...'
@@ -86,7 +78,6 @@ export default function AuthForm() {
           </button>
         </form>
 
-        {/* Switch */}
         <div style={styles.switch}>
           {isLogin ? 'Нет аккаунта?' : 'Уже есть аккаунт?'}
           <span

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
-import ItemCard from '../components/card'
+import ItemCard from '../components/ItemCard'
 import type { Tables } from '../types/database.types'
 
 type Profile = Tables<'profiles'>
@@ -20,7 +20,6 @@ export default function BuyerPage() {
 
     const load = async () => {
 
-      // ПРОДАВЕЦ
       const { data: profileData } = await supabase
         .from('profiles')
         .select('*')
@@ -31,7 +30,6 @@ export default function BuyerPage() {
         setProfile(profileData)
       }
 
-      // ОБЪЯВЛЕНИЯ
       const { data: itemsData } = await supabase
         .from('items')
         .select('*')
@@ -40,7 +38,6 @@ export default function BuyerPage() {
 
       setItems(itemsData || [])
 
-      // РЕЙТИНГ
       const { data: reviews } = await supabase
         .from('reviews')
         .select('rating')
@@ -68,7 +65,7 @@ export default function BuyerPage() {
           {profile?.avatar_url ? (
             <img src={profile.avatar_url} style={styles.avatarImg} />
           ) : (
-            '👤'
+            'Фото'
           )}
         </div>
 
@@ -77,7 +74,7 @@ export default function BuyerPage() {
         </div>
 
         <div style={styles.rating}>
-          ⭐ {rating || 'Нет оценок'}
+          Звезд {rating || 'Нет оценок'}
         </div>
 
         <button
@@ -89,7 +86,6 @@ export default function BuyerPage() {
 
       </div>
 
-      {/* ОБЪЯВЛЕНИЯ */}
       <div style={styles.sectionTitle}>
         Активные объявления
       </div>

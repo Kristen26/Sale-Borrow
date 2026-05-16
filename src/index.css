@@ -194,7 +194,6 @@ code {
   }
 }
 
-/* Адаптив для очень маленьких экранов */
 @media (max-width: 480px) {
   .bottom-nav-label {
     font-size: 10px;
@@ -209,12 +208,10 @@ code {
   }
 }
 
-/* Отступ для контента, чтобы не перекрывался панелью */
 .content-with-nav {
   padding-bottom: 80px;
 }
 
-/* Анимация пульсации при нажатии */
 .bottom-nav-item:active {
   transform: scale(0.95);
   background-color: rgba(0, 0, 0, 0.05);

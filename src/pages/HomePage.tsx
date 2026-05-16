@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import type { Tables, Enums } from '../types/database.types'
-import ItemCard from '../components/card'
+import ItemCard from '../components/ItemCard'
 import TopBar from '../components/TopBar'
 
 type Profile = Tables<'profiles'>
