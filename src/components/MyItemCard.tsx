@@ -150,7 +150,7 @@ const styles: Record<string, React.CSSProperties> = {
   price: {
     fontSize: '16px',
     fontWeight: 700,
-    color: '#5664c1',
+    color: '#000000',
     whiteSpace: 'nowrap',
     flexShrink: 0,
   },

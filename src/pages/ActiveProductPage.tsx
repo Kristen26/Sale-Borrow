@@ -121,9 +121,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: '100%',
   },
   stop: {
-    background: '#2b532e',
+    background: '#99be9b',
     color: '#fff',
-    borderColor: '#2b532e',
+    borderColor: '#ffffff',
   },
 }
 

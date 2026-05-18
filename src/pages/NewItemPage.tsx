@@ -4,16 +4,13 @@ import { useAuth } from '../lib/AuthProvider'
 import LeafletMap from '../components/LeafletMap'
 import TopBar from '../components/TopBar'
 import { X } from 'lucide-react'
-import type { Enums } from '../types/database.types'
-
-type DealType = Enums<'deal_type'>
 
 export default function NewItemPage() {
   const { session } = useAuth()
   const [title, setTitle] = useState('')
   const [price, setPrice] = useState('')
   const [description, setDescription] = useState('')
-  const [dealType, setDealType] = useState<DealType>('sale')
+  const [dealType, setDealType] = useState<string>('sale')
   const [selectedAddress, setSelectedAddress] = useState('')
   const [coordinates, setCoordinates] = useState<{ lat: number; lon: number } | null>(null)
   const [loading, setLoading] = useState(false)
@@ -35,6 +32,14 @@ export default function NewItemPage() {
     textarea.style.height = 'auto'
     textarea.style.height = `${textarea.scrollHeight}px`
   }, [description])
+
+  useEffect(() => {
+    if (dealType === 'gift') {
+      setPrice('0')
+    } else {
+      setPrice(prev => prev === '0' ? '' : prev)
+    }
+  }, [dealType])
 
   const handleLocationSelect = (address: string, lat: number, lon: number) => {
     setSelectedAddress(address)
@@ -97,7 +102,7 @@ export default function NewItemPage() {
           title,
           description,
           price: Number(price),
-          deal_type: dealType,
+          deal_type: dealType as unknown as never,
           owner_id: session.user.id,
           building_id: newBuilding.id,
           is_active: true,
@@ -162,15 +167,30 @@ export default function NewItemPage() {
             </div>
 
             <div style={styles.block}>
-              <label style={styles.label}>Цена</label>
-              <input
-                type="number"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                required
+              <label style={styles.label}>Тип сделки</label>
+              <select
+                value={dealType}
+                onChange={(e) => setDealType(e.target.value)}
                 style={styles.input}
-              />
+              >
+                <option value="sale">Продажа</option>
+                <option value="rent">Аренда</option>
+                <option value="gift">Бесплатно</option>
+              </select>
             </div>
+
+            {dealType !== 'gift' && (
+              <div style={styles.block}>
+                <label style={styles.label}>Цена</label>
+                <input
+                  type="number"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  required={dealType !== 'gift'}
+                  style={styles.input}
+                />
+              </div>
+            )}
 
             <div style={styles.block}>
               <label style={styles.label}>Описание</label>
@@ -186,19 +206,6 @@ export default function NewItemPage() {
               <div style={styles.counter}>
                 {description.length} / 800
               </div>
-            </div>
-
-            <div style={styles.block}>
-              <label style={styles.label}>Тип сделки</label>
-              <select
-                value={dealType}
-                onChange={(e) => setDealType(e.target.value as DealType)}
-                style={styles.input}
-              >
-                <option value="sale">Продажа</option>
-                <option value="rent">Аренда</option>
-                <option value="gift">Бесплатно</option>
-              </select>
             </div>
 
             <div style={styles.block}>

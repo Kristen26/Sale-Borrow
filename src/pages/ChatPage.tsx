@@ -58,6 +58,30 @@ export default function ChatPage() {
     }
 
     load()
+
+    const channel = supabase
+      .channel(`chat_messages_${id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          filter: `chat_id=eq.${id}`,
+        },
+        (payload) => {
+          const newMessage = payload.new as Message
+          setMessages((prev) => {
+            if (prev.some((m) => m.id === newMessage.id)) return prev
+            return [...prev, newMessage]
+          })
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }, [id])
 
   useEffect(() => {
@@ -67,21 +91,18 @@ export default function ChatPage() {
   const sendMessage = async () => {
     if (!text.trim() || !id || !userId) return
 
-    await supabase.from("messages").insert({
-      chat_id: id,
-      sender_id: userId,
-      content: text,
-    })
-
+    const currentText = text
     setText("")
 
-    const { data } = await supabase
-      .from("messages")
-      .select("*")
-      .eq("chat_id", id)
-      .order("created_at", { ascending: true })
+    const { error } = await supabase.from("messages").insert({
+      chat_id: id,
+      sender_id: userId,
+      content: currentText,
+    })
 
-    setMessages((data as Message[]) || [])
+    if (error) {
+      setText(currentText)
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -98,7 +119,6 @@ export default function ChatPage() {
           <div style={styles.title}>
             {chatInfo?.item?.title || "Товар"}
           </div>
-
           <div style={styles.subtitle}>
             {chatInfo?.seller
               ? `${chatInfo.seller.first_name} ${chatInfo.seller.last_name ?? ""}`
@@ -114,23 +134,22 @@ export default function ChatPage() {
                 display: "flex",
                 justifyContent:
                   msg.sender_id === userId ? "flex-end" : "flex-start",
-                marginBottom: 10,
+                marginBottom: "12px",
               }}
             >
               <div
                 style={{
                   ...styles.bubble,
                   background:
-                    msg.sender_id === userId ? "#7bd194" : "#eee",
+                    msg.sender_id === userId ? "#7bd194" : "#f1f1f1",
                   color:
-                    msg.sender_id === userId ? "#fff" : "#000",
+                    msg.sender_id === userId ? "#ffffff" : "#111111",
                 }}
               >
                 {msg.content}
               </div>
             </div>
           ))}
-
           <div ref={bottomRef} />
         </div>
 
@@ -142,7 +161,6 @@ export default function ChatPage() {
             placeholder="Сообщение..."
             style={styles.input}
           />
-
           <button onClick={sendMessage} style={styles.sendBtn}>
             Отправить
           </button>
@@ -156,78 +174,100 @@ export default function ChatPage() {
 const layout = {
   page: {
     background: "#eee",
-    height: "100vh",
+    height: "100dvh",
     overflow: "hidden",
+    position: "relative" as const,
   },
 
   centered: {
     maxWidth: "1200px",
     margin: "0 auto",
     background: "#ffffff",
-    height: "100vh",
+    height: "100%",
     display: "flex",
     flexDirection: "column" as const,
+    overflow: "hidden",
+    position: "relative" as const,
   },
 }
 
 const styles: Record<string, React.CSSProperties> = {
   header: {
     padding: "16px",
-    borderBottom: "1px solid #c9c3c3",
+    borderBottom: "1px solid #e0e0e0",
     textAlign: "center",
     background: "#fff",
     flexShrink: 0,
+    zIndex: 10,
   },
 
   title: {
     fontSize: "18px",
     fontWeight: 600,
     color: "#246ca7",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
 
   subtitle: {
     fontSize: "13px",
-    color: "#2c3c49",
+    color: "#666",
+    marginTop: "2px",
   },
 
   messages: {
     flex: 1,
     padding: "16px",
     overflowY: "auto",
+    background: "#fafafa",
+    WebkitOverflowScrolling: "touch" as const,
   },
 
   bubble: {
-    maxWidth: "60%",
-    padding: "10px 12px",
-    borderRadius: "12px",
-    fontSize: "14px",
+    maxWidth: "75%",
+    padding: "10px 14px",
+    borderRadius: "16px",
+    fontSize: "15px",
+    lineHeight: "1.4",
     wordBreak: "break-word",
+    boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
   },
 
   inputWrap: {
     display: "flex",
     gap: "10px",
-    padding: "12px",
+    padding: "12px 16px",
     background: "#ffffff",
-    borderTop: "1px solid #ccc",
+    borderTop: "1px solid #e0e0e0",
     flexShrink: 0,
+    boxSizing: "border-box",
+    zIndex: 10,
   },
+
   input: {
     flex: 1,
-    padding: "10px 14px",
-    borderRadius: "8px",
-    border: "1px solid #98aed4",
+    padding: "12px 14px",
+    borderRadius: "20px",
+    border: "1px solid #ced4da",
     background: "#fff",
     fontSize: "15px",
     outline: "none",
+    boxSizing: "border-box",
   },
 
   sendBtn: {
-    padding: "10px 14px",
+    padding: "0 18px",
     background: "#7bd194",
     color: "#fff",
     border: "none",
-    borderRadius: "8px",
+    borderRadius: "20px",
     cursor: "pointer",
+    fontWeight: 600,
+    fontSize: "14px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    transition: "background 0.2s",
   },
 }

@@ -121,9 +121,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: '100%',
   },
   restore: {
-    background: '#4caf50',
+    background: '#4c75af',
     color: '#fff',
-    borderColor: '#4caf50',
+    borderColor: '#ffffff',
   },
 }
 

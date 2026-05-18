@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
+import { useAuth } from '../lib/AuthProvider'
 import ItemCard from '../components/ItemCard'
 import TopBar from '../components/TopBar'
 import type { Tables } from '../types/database.types'
@@ -12,6 +13,7 @@ type Item = Tables<'items'>
 export default function BuyerPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { session } = useAuth()
 
   const [profile, setProfile] = useState<Profile | null>(null)
   const [items, setItems] = useState<Item[]>([])
@@ -60,6 +62,8 @@ export default function BuyerPage() {
 
     load()
   }, [id])
+
+  const isOwnProfile = session?.user?.id === id
 
   return (
     <div style={layout.page}>
@@ -117,15 +121,17 @@ export default function BuyerPage() {
               </div>
             </div>
 
-            <button
-              style={{
-                ...styles.scoreBtn,
-                ...(isMobile && mobileStyles.scoreBtnMobile)
-              }}
-              onClick={() => navigate(`/score/${profile?.id}`)}
-            >
-              Оценить продавца
-            </button>
+            {!isOwnProfile && (
+              <button
+                style={{
+                  ...styles.scoreBtn,
+                  ...(isMobile && mobileStyles.scoreBtnMobile)
+                }}
+                onClick={() => navigate(`/score/${profile?.id}`)}
+              >
+                Оценить продавца
+              </button>
+            )}
           </div>
 
           <div style={styles.sectionTitle}>Активные объявления</div>

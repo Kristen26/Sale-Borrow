@@ -171,23 +171,16 @@ const styles: Record<string, React.CSSProperties > = {
     position: 'absolute',
     top: '10px',
     right: '10px',
-
     width: '38px',
     height: '38px',
-
     borderRadius: '50%',
     border: 'none',
-
     background: 'rgba(255,255,255,0.94)',
-
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-
     cursor: 'pointer',
-
     backdropFilter: 'blur(10px)',
-
     boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
   },
 
@@ -195,16 +188,12 @@ const styles: Record<string, React.CSSProperties > = {
     position: 'absolute',
     left: '10px',
     bottom: '10px',
-
     background: '#5664c1',
     color: '#fff',
-
     fontSize: '11px',
     padding: '7px 11px',
-
     borderRadius: '999px',
     fontWeight: 600,
-
     backdropFilter: 'blur(6px)',
   },
 
@@ -218,7 +207,7 @@ const styles: Record<string, React.CSSProperties > = {
   price: {
     fontSize: '19px',
     fontWeight: 700,
-    color: '#111',
+    color: '#020202',
     lineHeight: 1.2,
   },
 
@@ -226,13 +215,10 @@ const styles: Record<string, React.CSSProperties > = {
     display: '-webkit-box',
     WebkitLineClamp: 2,
     WebkitBoxOrient: 'vertical',
-
     overflow: 'hidden',
-
     fontSize: '14px',
     lineHeight: '1.45',
     color: '#555',
-
     minHeight: '40px',
     wordBreak: 'break-word',
   },

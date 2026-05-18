@@ -239,12 +239,22 @@ const layout = {
   }
 }
 
+const mobileStyles: Record<string, React.CSSProperties> = {
+  centeredMobile: {
+    width: '100%',
+  },
+  containerMobile: {
+    padding: '80px 16px 40px',
+  }
+}
+
 const styles: Record<string, React.CSSProperties> = {
   container: {
     padding: '110px 16px 80px',
     textAlign: 'left',
     maxWidth: '600px',
     margin: '0 auto',
+    boxSizing: 'border-box',
   },
 
   avatarWrap: {
@@ -253,6 +263,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     marginBottom: '20px',
     gap: '8px',
+    boxSizing: 'border-box',
   },
 
   avatar: {
@@ -265,12 +276,15 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'center',
     overflow: 'hidden',
     border: '1px solid #ddd',
+    boxSizing: 'border-box',
+    flexShrink: 0,
   },
 
   avatarImg: {
     width: '100%',
     height: '100%',
     objectFit: 'cover',
+    display: 'block',
   },
 
   avatarBtn: {
@@ -291,6 +305,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '32px',
     fontWeight: 600,
     color: '#777',
+    boxSizing: 'border-box',
   },
 
   input: {
@@ -302,6 +317,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '15px',
     boxSizing: 'border-box',
     outline: 'none',
+    background: '#fff',
   },
 
   saveBtn: {
@@ -345,78 +361,65 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '15px',
     boxSizing: 'border-box',
   },
-
-  logout: {
-    width: '100%',
+  
+  accountBox: {
     padding: '12px',
     background: '#fff',
-    color: '#ff3b30',
+    border: '1px solid #ddd',
     borderRadius: '10px',
-    cursor: 'pointer',
-    border: '1px solid #ff3b30',
-    fontSize: '15px',
-    fontWeight: 500,
+    marginBottom: '12px',
     boxSizing: 'border-box',
   },
 
-  accountBox: {
-    background: '#fff',
-    border: '1px solid #eee',
-    borderRadius: '12px',
-    padding: '14px',
-    marginBottom: '16px',
-    textAlign: 'left',
-  },
-
   accountLabel: {
-    fontSize: '12px',
-    color: '#888',
-    marginBottom: '4px',
-    textAlign: 'left',
+    fontSize: '13px',
+    color: '#666',
+    marginBottom: '2px',
   },
 
   accountEmail: {
     fontSize: '15px',
     fontWeight: 500,
     color: '#333',
-    textAlign: 'left',
   },
 
   ratingBox: {
+    padding: '12px',
     background: '#fff',
-    border: '1px solid #eee',
-    borderRadius: '12px',
-    padding: '14px',
-    marginBottom: '16px',
-    textAlign: 'left',
+    border: '1px solid #ddd',
+    borderRadius: '10px',
+    marginBottom: '12px',
+    boxSizing: 'border-box',
   },
 
   ratingLabel: {
-    fontSize: '12px',
-    color: '#888',
-    marginBottom: '6px',
-    textAlign: 'left',
+    fontSize: '13px',
+    color: '#666',
   },
 
   ratingRow: {
     display: 'flex',
     alignItems: 'center',
     gap: '6px',
-    justifyContent: 'flex-start',
+    marginTop: '4px',
   },
 
   ratingValue: {
-    fontSize: '20px',
-    fontWeight: 700,
-    color: '#5664c1',
+    fontSize: '15px',
+    fontWeight: 600,
+    color: '#333',
   },
-}
 
-const mobileStyles: Record<string, React.CSSProperties> = {
-  centeredMobile: {
-    maxWidth: '100%',
-  },
-  containerMobile: {
-    padding: '16px 12px 80px',
-  },
+  logout: {
+    width: '100%',
+    padding: '12px',
+    background: 'none',
+    border: '1px solid #ff4d4f',
+    color: '#ff4d4f',
+    borderRadius: '10px',
+    cursor: 'pointer',
+    fontSize: '15px',
+    fontWeight: 500,
+    boxSizing: 'border-box',
+  }
 }
