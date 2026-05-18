@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/AuthProvider'
 import { isFavorite, toggleFavorite } from '../lib/favorites'
 import type { Tables } from '../types/database.types'
+import { Heart, ImageIcon } from 'lucide-react'
 
 type Item = Tables<'items'>
 
@@ -89,18 +90,17 @@ export default function ItemCard({
         ) : (
 
           <div style={styles.placeholder}>
-            Нет фото
+            <ImageIcon size={42} color="#bdbdbd" />
           </div>
-
         )}
 
-        <div style={styles.gradient} />
-
-        <button
-          onClick={handleFav}
-          style={styles.heart}
-        >
-          {fav ? '❤️' : '🤍'}
+        <button onClick={handleFav}
+          style={styles.heart}>
+          <Heart
+            size={20}
+            fill={fav ? '#ff3b5c' : 'transparent'}
+            color={fav ? '#ff3b5c' : '#222'}
+          />
         </button>
 
         <div style={styles.badge}>
@@ -127,34 +127,34 @@ export default function ItemCard({
   )
 }
 
-const styles: Record<
-  string,
-  React.CSSProperties
-> = {
-
+const styles: Record<string, React.CSSProperties > = {
   card: {
     background: '#fff',
-    borderRadius: '18px',
+    borderRadius: '20px',
     overflow: 'hidden',
     cursor: 'pointer',
-    border: '1px solid #ececec',
+    border: '1px solid #efefef',
     transition: '0.2s ease',
-    boxShadow:
-      '0 2px 10px rgba(0,0,0,0.04)',
+    display: 'flex',
+    flexDirection: 'column',
   },
 
   imageWrap: {
     position: 'relative',
     width: '100%',
-    aspectRatio: '1',
-    background: '#f2f2f2',
+    height: '220px',
+    background: '#f6f6f6',
     overflow: 'hidden',
+
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   image: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
+    maxWidth: '100%',
+    maxHeight: '100%',
+    objectFit: 'contain',
     display: 'block',
   },
 
@@ -164,64 +164,76 @@ const styles: Record<
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '14px',
-    color: '#999',
-    background: '#f5f5f5',
-  },
-
-  gradient: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: '70px',
-    background:
-      'linear-gradient(to top, rgba(0,0,0,0.45), transparent)',
-    pointerEvents: 'none',
+    background: '#f8f8f8',
   },
 
   heart: {
     position: 'absolute',
     top: '10px',
     right: '10px',
-    width: '34px',
-    height: '34px',
+
+    width: '38px',
+    height: '38px',
+
     borderRadius: '50%',
     border: 'none',
-    background: 'rgba(255,255,255,0.95)',
+
+    background: 'rgba(255,255,255,0.94)',
+
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+
     cursor: 'pointer',
-    fontSize: '16px',
-    backdropFilter: 'blur(4px)',
+
+    backdropFilter: 'blur(10px)',
+
+    boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
   },
 
   badge: {
     position: 'absolute',
     left: '10px',
     bottom: '10px',
+
     background: '#5664c1',
     color: '#fff',
+
     fontSize: '11px',
-    padding: '6px 10px',
+    padding: '7px 11px',
+
     borderRadius: '999px',
-    fontWeight: 500,
+    fontWeight: 600,
+
+    backdropFilter: 'blur(6px)',
   },
 
   body: {
-    padding: '12px',
+    padding: '14px 14px 16px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '6px',
   },
 
   price: {
-    fontSize: '18px',
+    fontSize: '19px',
     fontWeight: 700,
-    marginBottom: '6px',
     color: '#111',
+    lineHeight: 1.2,
   },
 
   title: {
-    fontSize: '14px',
-    color: '#444',
-    lineHeight: '1.4',
-    height: '40px',
+    display: '-webkit-box',
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: 'vertical',
+
     overflow: 'hidden',
+
+    fontSize: '14px',
+    lineHeight: '1.45',
+    color: '#555',
+
+    minHeight: '40px',
+    wordBreak: 'break-word',
   },
 }

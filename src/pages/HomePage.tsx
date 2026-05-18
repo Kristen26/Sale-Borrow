@@ -24,48 +24,6 @@ const FILTER_COLORS = {
   border: '#ddd',
 }
 
-const styles = {
-  page: {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    paddingTop: '110px',
-    paddingLeft: '16px',
-    paddingRight: '16px',
-  },
-
-  title: {
-    fontSize: '22px',
-    fontWeight: 600,
-    marginBottom: '16px',
-  },
-
-  chipsContainer: {
-    display: 'flex',
-    gap: '10px',
-    marginBottom: '20px',
-    flexWrap: 'wrap' as const,
-  },
-
-  chip: {
-    padding: '8px 16px',
-    borderRadius: '20px',
-    fontSize: '14px',
-    cursor: 'pointer',
-  },
-
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(4, 1fr)',
-    gap: '16px',
-  },
-
-  loadMore: {
-    textAlign: 'center' as const,
-    padding: '20px',
-    color: '#888',
-  },
-}
-
 export default function HomePage() {
   const [query, setQuery] = useState('')
   const [selectedDealType, setSelectedDealType] = useState<DealType | 'all'>('all')
@@ -73,14 +31,17 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
   const pageRef = useRef(0)
   const loaderRef = useRef<HTMLDivElement | null>(null)
 
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   const fetchItems = useCallback(async (reset = false) => {
-    if (loading) return
-
-    setLoading(true)
-
     const page = reset ? 0 : pageRef.current
     const from = page * PAGE_SIZE
     const to = from + PAGE_SIZE - 1
@@ -110,36 +71,33 @@ export default function HomePage() {
       const typed = data as ItemWithDetails[]
 
       setItems(prev => {
-
         if (reset) return typed
-
         const map = new Map()
-
         ;[...prev, ...typed].forEach(item => {
           map.set(item.id, item)
         })
-
-  return Array.from(map.values())
-})
+        return Array.from(map.values())
+      })
       setHasMore(typed.length === PAGE_SIZE)
-
       pageRef.current = reset ? 1 : pageRef.current + 1
     }
-
-    setLoading(false)
-  }, [query, selectedDealType, loading])
+  }, [query, selectedDealType])
 
   useEffect(() => {
     pageRef.current = 0
-    fetchItems(true)
+    
+    const initFetch = async () => {
+      await fetchItems(true)
+    }
+    
+    initFetch()
   }, [query, selectedDealType, fetchItems])
 
   useEffect(() => {
-    if (loading) return
-
     const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore && !loading) {
-        fetchItems()
+      if (entries[0]?.isIntersecting && hasMore && !loading) {
+        setLoading(true)
+        fetchItems().finally(() => setLoading(false))
       }
     })
 
@@ -152,44 +110,129 @@ export default function HomePage() {
   }, [fetchItems, hasMore, loading])
 
   return (
-    <>
-      <TopBar
-        title="Rent&Sale"
-        searchValue={query}
-        onSearchChange={setQuery}
-      />
+    <div style={layout.page}>
+      <div 
+        style={{
+          ...layout.centered,
+          ...(isMobile && mobileStyles.centeredMobile)
+        }}
+      >
+        <TopBar
+          title="Rent&Sale"
+          searchValue={query}
+          onSearchChange={setQuery}
+        />
 
-      <div style={styles.page}>
+        <div 
+          style={{
+            ...styles.container,
+            ...(isMobile && mobileStyles.containerMobile)
+          }}
+        >
+          <div style={styles.chipsContainer}>
+            {['all', 'gift', 'rent', 'sale'].map(type => {
+              const active = selectedDealType === type
 
-        <div style={styles.chipsContainer}>
-          {['all', 'gift', 'rent', 'sale'].map(type => {
-            const active = selectedDealType === type
+              return (
+                <button
+                  key={type}
+                  onClick={() => setSelectedDealType(type as DealType | 'all')}
+                  style={{
+                    ...styles.chip,
+                    background: active ? FILTER_COLORS.activeBg : FILTER_COLORS.defaultBg,
+                    color: active ? FILTER_COLORS.activeText : FILTER_COLORS.defaultText,
+                    border: `1px solid ${FILTER_COLORS.border}`,
+                  }}
+                >
+                  {type === 'all' ? 'все' :
+                   type === 'gift' ? 'даром' :
+                   type === 'rent' ? 'аренда' : 'продажа'}
+                </button>
+              )
+            })}
+          </div>
 
-            return (
-              <button
-                key={type}
-                onClick={() => setSelectedDealType(type as DealType | 'all')}
-                style={{
-                  ...styles.chip,
-                  background: active ? FILTER_COLORS.activeBg : FILTER_COLORS.defaultBg,
-                  color: active ? FILTER_COLORS.activeText : FILTER_COLORS.defaultText,
-                  border: `1px solid ${FILTER_COLORS.border}`,
-                }}
-              >
-                {type === 'all' ? 'все' :
-                 type === 'gift' ? 'даром' :
-                 type === 'rent' ? 'аренда' : 'продажа'}
-              </button>
-            )
-          })}
-        </div>
+          <div 
+            style={{
+              ...styles.grid,
+              ...(isMobile && mobileStyles.gridMobile)
+            }}
+          >
+            {items.map(item => (
+              <ItemCard key={item.id} item={item} />
+            ))}
+          </div>
 
-        <div style={styles.grid}>
-          {items.map(item => (
-            <ItemCard key={item.id} item={item} />
-          ))}
+          <div ref={loaderRef} style={styles.loadMore}>
+            {loading && 'Загрузка объявлений...'}
+          </div>
         </div>
       </div>
-    </>
+    </div>
   )
+}
+
+const layout = {
+  page: {
+    background: '#eee',
+    minHeight: '100vh',
+  },
+  centered: {
+    maxWidth: '1200px',
+    margin: '0 auto',
+    background: '#F8F9FA',
+    minHeight: '100vh',
+  }
+}
+
+const styles: Record<string, React.CSSProperties> = {
+  container: {
+    paddingTop: '110px',
+    paddingLeft: '16px',
+    paddingRight: '16px',
+    paddingBottom: '80px',
+    textAlign: 'left',
+  },
+  chipsContainer: {
+    display: 'flex',
+    gap: '10px',
+    marginBottom: '20px',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+  },
+  chip: {
+    padding: '8px 16px',
+    borderRadius: '20px',
+    fontSize: '14px',
+    cursor: 'pointer',
+    outline: 'none',
+  },
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(4, 1fr)',
+    gap: '16px',
+    justifyContent: 'flex-start',
+  },
+  loadMore: {
+    textAlign: 'center',
+    padding: '20px',
+    color: '#888',
+    fontSize: '14px',
+  },
+}
+
+const mobileStyles: Record<string, React.CSSProperties> = {
+  centeredMobile: {
+    maxWidth: '100%',
+  },
+  containerMobile: {
+    paddingTop: '90px',
+    paddingLeft: '12px',
+    paddingRight: '12px',
+    paddingBottom: '80px',
+  },
+  gridMobile: {
+    gridTemplateColumns: 'repeat(2, 1fr)',
+    gap: '10px',
+  },
 }

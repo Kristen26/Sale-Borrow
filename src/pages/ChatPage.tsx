@@ -84,6 +84,12 @@ export default function ChatPage() {
     setMessages((data as Message[]) || [])
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      sendMessage()
+    }
+  }
+
   return (
     <div style={layout.page}>
       <div style={layout.centered}>
@@ -132,6 +138,7 @@ export default function ChatPage() {
           <input
             value={text}
             onChange={(e) => setText(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="Сообщение..."
             style={styles.input}
           />
@@ -149,14 +156,15 @@ export default function ChatPage() {
 const layout = {
   page: {
     background: "#eee",
-    minHeight: "100vh",
+    height: "100vh",
+    overflow: "hidden",
   },
 
   centered: {
     maxWidth: "1200px",
     margin: "0 auto",
-    background: "#ececec",
-    minHeight: "100vh",
+    background: "#ffffff",
+    height: "100vh",
     display: "flex",
     flexDirection: "column" as const,
   },
@@ -165,12 +173,10 @@ const layout = {
 const styles: Record<string, React.CSSProperties> = {
   header: {
     padding: "16px",
-    borderBottom: "1px solid #373a90",
+    borderBottom: "1px solid #c9c3c3",
     textAlign: "center",
     background: "#fff",
-    position: "sticky",
-    top: 0,
-    zIndex: 5,
+    flexShrink: 0,
   },
 
   title: {
@@ -202,20 +208,23 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     gap: "10px",
     padding: "12px",
-    background: "#ececec",
+    background: "#ffffff",
     borderTop: "1px solid #ccc",
-    marginBottom: "20px",
+    flexShrink: 0,
   },
   input: {
     flex: 1,
-    padding: "10px",
+    padding: "10px 14px",
     borderRadius: "8px",
-    border: "1px solid #6c8eca",
+    border: "1px solid #98aed4",
+    background: "#fff",
+    fontSize: "15px",
+    outline: "none",
   },
 
   sendBtn: {
     padding: "10px 14px",
-    background: "#5664c1",
+    background: "#7bd194",
     color: "#fff",
     border: "none",
     borderRadius: "8px",

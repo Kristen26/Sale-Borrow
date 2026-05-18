@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import ItemCard from '../components/ItemCard'
+import TopBar from '../components/TopBar'
 import type { Tables } from '../types/database.types'
+import { Star, User } from 'lucide-react'
 
 type Profile = Tables<'profiles'>
 type Item = Tables<'items'>
@@ -15,11 +17,18 @@ export default function BuyerPage() {
   const [items, setItems] = useState<Item[]>([])
   const [rating, setRating] = useState<number>(0)
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   useEffect(() => {
     if (!id) return
 
     const load = async () => {
-
       const { data: profileData } = await supabase
         .from('profiles')
         .select('*')
@@ -44,10 +53,7 @@ export default function BuyerPage() {
         .eq('seller_id', id)
 
       if (reviews?.length) {
-        const avg =
-          reviews.reduce((sum, r) => sum + r.rating, 0) /
-          reviews.length
-
+        const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
         setRating(Number(avg.toFixed(1)))
       }
     }
@@ -56,81 +62,144 @@ export default function BuyerPage() {
   }, [id])
 
   return (
-    <div style={styles.page}>
+    <div style={layout.page}>
+      <div 
+        style={{
+          ...layout.centered,
+          ...(isMobile && mobileStyles.centeredMobile)
+        }}
+      >
+        <TopBar title="Продавец" />
 
-      {/* HEADER */}
-      <div style={styles.header}>
-
-        <div style={styles.avatar}>
-          {profile?.avatar_url ? (
-            <img src={profile.avatar_url} style={styles.avatarImg} />
-          ) : (
-            'Фото'
-          )}
-        </div>
-
-        <div style={styles.name}>
-          {profile?.first_name} {profile?.last_name || ''}
-        </div>
-
-        <div style={styles.rating}>
-          Звезд {rating || 'Нет оценок'}
-        </div>
-
-        <button
-          style={styles.scoreBtn}
-          onClick={() => navigate(`/score/${profile?.id}`)}
+        <div 
+          style={{
+            ...styles.container,
+            ...(isMobile && mobileStyles.containerMobile)
+          }}
         >
-          Оценить продавца
-        </button>
+          <div 
+            style={{
+              ...styles.header,
+              ...(isMobile && mobileStyles.headerMobile)
+            }}
+          >
+            <div style={styles.headerLeft}>
+              <div style={styles.avatar}>
+                {profile?.avatar_url ? (
+                  <img
+                    src={profile.avatar_url}
+                    alt="avatar"
+                    style={styles.avatarImg}
+                  />
+                ) : (
+                  <User size={24} color="#999" />
+                )}
+              </div>
 
+              <div style={styles.meta}>
+                <div style={styles.name}>
+                  {profile?.first_name} {profile?.last_name || ''}
+                </div>
+
+                <div style={styles.ratingWrap}>
+                  <div style={styles.rating}>
+                    <Star size={14} fill="#f5b301" color="#f5b301" />
+                    <span>{rating || 'Нет оценок'}</span>
+                  </div>
+                  
+                  <button 
+                    style={styles.reviewsLink}
+                    onClick={() => navigate(`/reviews/${id}`)}
+                  >
+                    читать отзывы
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button
+              style={{
+                ...styles.scoreBtn,
+                ...(isMobile && mobileStyles.scoreBtnMobile)
+              }}
+              onClick={() => navigate(`/score/${profile?.id}`)}
+            >
+              Оценить продавца
+            </button>
+          </div>
+
+          <div style={styles.sectionTitle}>Активные объявления</div>
+
+          <div
+            style={{
+              ...styles.grid,
+              gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+            }}
+          >
+            {items.map(item => (
+              <ItemCard key={item.id} item={item} />
+            ))}
+          </div>
+        </div>
       </div>
-
-      <div style={styles.sectionTitle}>
-        Активные объявления
-      </div>
-
-      <div style={styles.grid}>
-        {items.map(item => (
-          <ItemCard key={item.id} item={item} />
-        ))}
-      </div>
-
     </div>
   )
 }
 
-const styles: Record<string, React.CSSProperties> = {
-
+const layout = {
   page: {
-    padding: '20px',
-    maxWidth: '1400px',
+    background: '#eee',
+    minHeight: '100vh',
+  },
+  centered: {
+    maxWidth: '1200px',
     margin: '0 auto',
+    background: '#F8F9FA',
+    minHeight: '100vh',
+  }
+}
+
+const styles: Record<string, React.CSSProperties> = {
+  container: {
+    padding: '110px 16px 80px',
+    textAlign: 'left',
   },
 
   header: {
     background: '#fff',
-    borderRadius: '18px',
-    padding: '24px',
-    marginBottom: '24px',
+    borderRadius: '16px',
+    padding: '16px 20px',
+    marginBottom: '20px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    border: '1px solid #eee',
+    gap: '16px',
+  },
 
+  headerLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+  },
+
+  meta: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
 
   avatar: {
-    width: '90px',
-    height: '90px',
+    width: '64px',
+    height: '64px',
     borderRadius: '50%',
-    background: '#eee',
-
+    background: '#f3f3f3',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-
     overflow: 'hidden',
-    fontSize: '34px',
+    flexShrink: 0,
+    border: '1px solid #eaeaea',
   },
 
   avatarImg: {
@@ -140,36 +209,81 @@ const styles: Record<string, React.CSSProperties> = {
   },
 
   name: {
-    marginTop: '12px',
-    fontSize: '24px',
-    fontWeight: 600,
+    fontSize: '18px',
+    fontWeight: 700,
+    color: '#111',
+    textAlign: 'left',
+  },
+
+  ratingWrap: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    marginTop: '4px',
+    flexWrap: 'wrap',
   },
 
   rating: {
-    marginTop: '6px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
     color: '#666',
-    fontSize: '16px',
+    fontSize: '14px',
+    fontWeight: 500,
+  },
+
+  reviewsLink: {
+    background: 'none',
+    border: 'none',
+    padding: 0,
+    color: '#5664c1',
+    fontSize: '13px',
+    fontWeight: 500,
+    cursor: 'pointer',
+    textDecoration: 'underline',
   },
 
   scoreBtn: {
-    marginTop: '16px',
+    border: 'none',
+    borderRadius: '10px',
     background: '#5664c1',
     color: '#fff',
-    border: 'none',
-    borderRadius: '12px',
-    padding: '10px 18px',
+    padding: '10px 16px',
+    fontSize: '13px',
+    fontWeight: 600,
     cursor: 'pointer',
+    flexShrink: 0,
   },
 
   sectionTitle: {
-    fontSize: '22px',
-    fontWeight: 600,
-    marginBottom: '16px',
+    fontSize: '18px',
+    fontWeight: 700,
+    marginBottom: '14px',
+    color: '#111',
+    textAlign: 'left',
   },
 
   grid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
     gap: '16px',
+  },
+}
+
+const mobileStyles: Record<string, React.CSSProperties> = {
+  centeredMobile: {
+    maxWidth: '100%',
+  },
+  containerMobile: {
+    padding: '90px 12px 80px',
+  },
+  headerMobile: {
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    padding: '16px',
+  },
+  scoreBtnMobile: {
+    width: '100%',
+    textAlign: 'center',
+    marginTop: '6px',
   },
 }

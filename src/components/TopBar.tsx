@@ -11,8 +11,17 @@ const TopBar: FC<Props> = ({ title, searchValue, onSearchChange }) => {
     <div style={styles.wrapper}>
       <div style={styles.inner}>
 
-        <div style={styles.row}>
-          <div style={styles.title}>{title}</div>
+        <div style={{
+          ...styles.row,
+          justifyContent: onSearchChange ? 'flex-start' : 'center'
+        }}>
+          <div style={{
+            ...styles.title,
+            textAlign: onSearchChange ? 'left' : 'center',
+            width: onSearchChange ? 'auto' : '100%'
+          }}>
+            {title}
+          </div>
 
           {onSearchChange && (
             <div style={styles.searchWrap}>
@@ -55,6 +64,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     gap: '16px',
+    width: '100%',
   },
 
   title: {

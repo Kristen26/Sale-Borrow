@@ -20,6 +20,11 @@ export default function ChatButton({
 
     const userId = session.user.id
 
+    if (userId === sellerId) {
+      alert('Вы не можете написать самому себе')
+      return
+    }
+
     const { data: existingChat, error: findError } = await supabase
       .from('chats')
       .select('id')

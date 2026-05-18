@@ -14,6 +14,8 @@ import CompletedItemsPage from './pages/CompProductActivate'
 import EditItemPage from './pages/EditItemPage'
 import BuyerPage from './pages/BuyerPage'
 import ScorePage from './pages/ScorePage'
+import ReviewsPage from './pages/ReviewsPage'
+
 
 function App() {
   return (
@@ -35,6 +37,7 @@ function App() {
             <Route path="/edit/:id" element={<EditItemPage />} />
             <Route path="/buyer/:id" element={<BuyerPage />} />
             <Route path="/score/:id" element={<ScorePage />} />
+            <Route path="/reviews/:id" element={<ReviewsPage />} />
           </Route>
         </Route>
       </Routes>

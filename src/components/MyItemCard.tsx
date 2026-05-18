@@ -28,7 +28,6 @@ export default function MyItemCard({
     <div style={styles.card}>
 
       <div style={styles.imageWrap}>
-
         {image ? (
           <img
             src={image}
@@ -40,13 +39,12 @@ export default function MyItemCard({
             Фото
           </div>
         )}
-
       </div>
 
       <div style={styles.info}>
 
-        <div>
-          <div style={styles.name}>
+        <div style={styles.headerRow}>
+          <div style={styles.name} title={item.title}>
             {item.title}
           </div>
 
@@ -56,7 +54,6 @@ export default function MyItemCard({
         </div>
 
         <div style={styles.actions}>
-
           <button
             style={styles.edit}
             onClick={onEdit}
@@ -65,12 +62,14 @@ export default function MyItemCard({
           </button>
 
           <button
-            style={actionStyle}
+            style={{
+              ...styles.edit,
+              ...actionStyle,
+            }}
             onClick={onAction}
           >
             {actionText}
           </button>
-
         </div>
 
       </div>
@@ -85,23 +84,30 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     gap: '12px',
     background: '#fff',
-    borderRadius: '14px',
+    borderRadius: '18px',
     border: '1px solid #eee',
-    marginBottom: '12px',
+    marginBottom: '14px',
     overflow: 'hidden',
+    padding: '10px',
+    alignItems: 'center',
   },
 
   imageWrap: {
-    width: '110px',
-    minWidth: '110px',
-    height: '110px',
-    background: '#f3f3f3',
+    width: '96px',
+    minWidth: '96px',
+    height: '96px',
+    borderRadius: '14px',
+    background: '#f5f5f5',
+    overflow: 'hidden',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   image: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
+    maxWidth: '100%',
+    maxHeight: '100%',
+    objectFit: 'contain',
     display: 'block',
   },
 
@@ -111,42 +117,58 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '28px',
+    fontSize: '14px',
     color: '#999',
   },
 
   info: {
     flex: 1,
-    padding: '12px',
+    minWidth: 0,
     display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: '10px',
+    gap: '12px',
+  },
+
+  headerRow: {
+    display: 'flex',
+    alignItems: 'baseline',
+    gap: '8px',
+    width: '100%',
   },
 
   name: {
-    fontSize: '16px',
+    fontSize: '15px',
     fontWeight: 600,
-    marginBottom: '6px',
+    color: '#111',
+    lineHeight: '1.4',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
 
   price: {
-    fontSize: '15px',
+    fontSize: '16px',
     fontWeight: 700,
     color: '#5664c1',
+    whiteSpace: 'nowrap',
+    flexShrink: 0,
   },
 
   actions: {
     display: 'flex',
-    flexDirection: 'column',
     gap: '8px',
+    width: '100%',
   },
 
   edit: {
-    padding: '8px 10px',
-    borderRadius: '10px',
+    flex: 1,
+    height: '40px',
+    borderRadius: '12px',
     border: '1px solid #ddd',
     background: '#fff',
     cursor: 'pointer',
+    fontSize: '14px',
+    fontWeight: 500,
   },
 }

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../lib/AuthProvider'
 import ItemCard from '../components/ItemCard'
+import TopBar from '../components/TopBar'
+import { Heart } from 'lucide-react'
 import type { Tables } from '../types/database.types'
 
 type Item = Tables<'items'>
@@ -18,6 +20,14 @@ export default function FavoritesPage() {
 
   const [items, setItems] = useState<Item[]>([])
   const [loading, setLoading] = useState(true)
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     if (!session) {
@@ -52,47 +62,87 @@ export default function FavoritesPage() {
   }, [session, navigate])
 
   if (loading) {
-    return <div style={{ padding: 20 }}>Загрузка...</div>
+    return <div style={{ padding: 20, textAlign: 'center' }}>Загрузка...</div>
   }
 
   if (items.length === 0) {
     return (
-      <div style={styles.empty}>
-        <div style={styles.emoji}>❤️</div>
-        <div>Нет избранных товаров</div>
-        <button onClick={() => navigate('/')}>
-          Перейти к объявлениям
-        </button>
+      <div style={layout.page}>
+        <div 
+          style={{
+            ...layout.centered,
+            ...(isMobile && mobileStyles.centeredMobile)
+          }}
+        >
+          <TopBar title="Избранное" />
+          
+          <div style={styles.empty}>
+            <Heart size={48} color="#b0b0b0" />
+            <div style={styles.emptyText}>Нет избранных товаров</div>
+            <button style={styles.homeBtn} onClick={() => navigate('/')}>
+              Перейти к объявлениям
+            </button>
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div style={styles.page}>
-      <h1 style={styles.title}>Избранное</h1>
+    <div style={layout.page}>
+      <div 
+        style={{
+          ...layout.centered,
+          ...(isMobile && mobileStyles.centeredMobile)
+        }}
+      >
+        <TopBar title="Избранное" />
 
-      <div style={styles.grid}>
-        {items.map(item => (
-          <ItemCard key={item.id} item={item} />
-        ))}
+        <div 
+          style={{
+            ...styles.container,
+            ...(isMobile && mobileStyles.containerMobile)
+          }}
+        >
+          <div 
+            style={{
+              ...styles.grid,
+              ...(isMobile && mobileStyles.gridMobile)
+            }}
+          >
+            {items.map(item => (
+              <ItemCard key={item.id} item={item} />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )
 }
 
-const styles = {
+const layout = {
   page: {
-    padding: '12px',
-    paddingBottom: '80px'
+    background: '#eee',
+    minHeight: '100vh',
   },
-  title: {
-    fontSize: '18px',
-    marginBottom: '12px'
+  centered: {
+    maxWidth: '1200px',
+    margin: '0 auto',
+    background: '#F8F9FA',
+    minHeight: '100vh',
+  }
+}
+
+const styles = {
+  container: {
+    padding: '110px 16px 80px',
+    textAlign: 'center' as const,
   },
   grid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(4, 1fr)',
-    gap: '10px'
+    gap: '12px',
+    justifyContent: 'center',
   },
   empty: {
     display: 'flex',
@@ -100,9 +150,36 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     height: '70vh',
-    gap: '12px'
+    gap: '16px',
+    textAlign: 'center' as const,
+    paddingTop: '60px',
   },
-  emoji: {
-    fontSize: '40px'
+  emptyText: {
+    color: '#666',
+    fontSize: '15px',
+  },
+  homeBtn: {
+    padding: '10px 18px',
+    background: '#5664c1',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '10px',
+    cursor: 'pointer',
+    fontWeight: 500,
+    fontSize: '14px',
+    marginTop: '4px',
   }
+}
+
+const mobileStyles: Record<string, React.CSSProperties> = {
+  centeredMobile: {
+    maxWidth: '100%',
+  },
+  containerMobile: {
+    padding: '90px 12px 80px',
+  },
+  gridMobile: {
+    gridTemplateColumns: 'repeat(2, 1fr)',
+    gap: '10px',
+  },
 }

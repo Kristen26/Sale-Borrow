@@ -13,7 +13,7 @@ type Chat = {
   id: string
   item: { title: string } | null
   buyer: { first_name: string } | null
-  seller: { first_name: string } | null
+  seller: { first_name: string; avatar_url: string | null } | null
   last_message: Message[]
 }
 
@@ -23,6 +23,14 @@ export default function ChatsPage() {
 
   const [chats, setChats] = useState<Chat[]>([])
   const [loading, setLoading] = useState(true)
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     if (!session) {
@@ -39,7 +47,7 @@ export default function ChatsPage() {
           id,
           item:items(title),
           buyer:profiles!chats_buyer_id_fkey(first_name),
-          seller:profiles!chats_seller_id_fkey(first_name),
+          seller:profiles!chats_seller_id_fkey(first_name, avatar_url),
           last_message:messages(content, created_at)
         `)
         .or(`buyer_id.eq.${session.user.id},seller_id.eq.${session.user.id}`)
@@ -61,15 +69,25 @@ export default function ChatsPage() {
 
   return (
     <div style={layout.page}>
-      <div style={layout.centered}>
+      <div 
+        style={{
+          ...layout.centered,
+          ...(isMobile && mobileStyles.centeredMobile)
+        }}
+      >
 
         <TopBar title="Чаты" />
 
-        <div style={styles.content}>
-          {loading && <div>Загрузка...</div>}
+        <div 
+          style={{
+            ...styles.content,
+            ...(isMobile && mobileStyles.contentMobile)
+          }}
+        >
+          {loading && <div style={{ textAlign: 'left' }}>Загрузка...</div>}
 
           {!loading && chats.length === 0 && (
-            <div style={{ color: '#777' }}>Нет чатов</div>
+            <div style={{ color: '#777', textAlign: 'left' }}>Нет чатов</div>
           )}
 
           {chats.map(chat => {
@@ -82,14 +100,22 @@ export default function ChatsPage() {
                 onClick={() => navigate(`/chat/${chat.id}`)}
               >
                 <div style={styles.avatar}>
-                  {chat.item?.title?.[0] || '💬'}
+                  {chat.seller?.avatar_url ? (
+                    <img 
+                      src={chat.seller.avatar_url} 
+                      alt="" 
+                      style={styles.avatarImg} 
+                    />
+                  ) : (
+                    chat.item?.title?.[0] || '💬'
+                  )}
                 </div>
 
                 <div style={styles.info}>
                   <div style={styles.topRow}>
-                  <div style={styles.name}>
-                    {chat.item?.title || 'Товар'} • {chat.seller?.first_name || 'Продавец'}
-                  </div>
+                    <div style={styles.name}>
+                      {chat.item?.title || 'Товар'} • {chat.seller?.first_name || 'Продавец'}
+                    </div>
 
                     {lastMsg && (
                       <div style={styles.time}>
@@ -129,6 +155,7 @@ const layout = {
 const styles: Record<string, React.CSSProperties> = {
   content: {
     padding: '90px 16px 16px',
+    textAlign: 'left',
   },
 
   chat: {
@@ -140,6 +167,7 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: '10px',
     cursor: 'pointer',
     alignItems: 'center',
+    textAlign: 'left',
   },
 
   avatar: {
@@ -153,36 +181,70 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'center',
     fontWeight: 600,
     fontSize: '18px',
+    flexShrink: 0,
+    overflow: 'hidden',
+    border: '1px solid #eee',
+  },
+
+  avatarImg: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
   },
 
   topRow: {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: '4px',
-},
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    marginBottom: '4px',
+    gap: '8px',
+    width: '100%',
+  },
 
   info: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
+    minWidth: 0,
+    alignItems: 'flex-start',
+    textAlign: 'left',
   },
 
   name: {
     fontWeight: 600,
     fontSize: '14px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    textAlign: 'left',
+    flex: 1,
   },
+
   time: {
     fontSize: '12px',
     color: '#999',
+    whiteSpace: 'nowrap',
+    flexShrink: 0,
+    textAlign: 'right',
   },
 
   message: {
     fontSize: '13px',
     color: '#666',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    textAlign: 'left',
+    width: '100%',
+  },
+}
+
+const mobileStyles: Record<string, React.CSSProperties> = {
+  centeredMobile: {
+    maxWidth: '100%',
+  },
+  contentMobile: {
+    padding: '80px 12px 12px',
   },
 }
