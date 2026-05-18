@@ -58,30 +58,6 @@ export default function ChatPage() {
     }
 
     load()
-
-    const channel = supabase
-      .channel(`chat_messages_${id}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
-          filter: `chat_id=eq.${id}`,
-        },
-        (payload) => {
-          const newMessage = payload.new as Message
-          setMessages((prev) => {
-            if (prev.some((m) => m.id === newMessage.id)) return prev
-            return [...prev, newMessage]
-          })
-        }
-      )
-      .subscribe()
-
-    return () => {
-      supabase.removeChannel(channel)
-    }
   }, [id])
 
   useEffect(() => {
@@ -94,14 +70,22 @@ export default function ChatPage() {
     const currentText = text
     setText("")
 
-    const { error } = await supabase.from("messages").insert({
-      chat_id: id,
-      sender_id: userId,
-      content: currentText,
-    })
+    // Метод .select() заставляет Supabase вернуть созданную запись из базы данных
+    const { data, error } = await supabase
+      .from("messages")
+      .insert({
+        chat_id: id,
+        sender_id: userId,
+        content: currentText,
+      })
+      .select()
 
     if (error) {
       setText(currentText)
+    } else if (data && data.length > 0) {
+      // Сразу же добавляем новую запись в локальный стейт для мгновенного рендера
+      const createdMessage = data[0] as Message
+      setMessages((prev) => [...prev, createdMessage])
     }
   }
 
